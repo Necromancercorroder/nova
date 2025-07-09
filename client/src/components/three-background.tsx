@@ -29,147 +29,130 @@ export default function ThreeBackground() {
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
-    // Create multiple geometric shapes
+    // Create 3D printed dragon
     const shapes: THREE.Mesh[] = [];
     
-    // Create rotating cubes with different materials
-    for (let i = 0; i < shapeCount; i++) {
-      const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-      const material = new THREE.MeshPhongMaterial({
-        color: i % 2 === 0 ? 0xff8c00 : 0xffd700, // Orange and yellow
-        transparent: true,
-        opacity: 0.3,
-        wireframe: i % 3 === 0
-      });
-      
-      const cube = new THREE.Mesh(geometry, material);
-      cube.position.set(
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 20
-      );
-      cube.rotation.set(
-        Math.random() * Math.PI,
-        Math.random() * Math.PI,
-        Math.random() * Math.PI
-      );
-      
-      scene.add(cube);
-      shapes.push(cube);
-    }
-
-    // Create dodecahedrons (more complex 3D shapes)
-    for (let i = 0; i < Math.floor(shapeCount * 0.6); i++) {
-      const geometry = new THREE.DodecahedronGeometry(0.8);
-      const material = new THREE.MeshPhongMaterial({
-        color: 0xff4500,
-        transparent: true,
-        opacity: 0.2,
-        wireframe: true
-      });
-      
-      const dodecahedron = new THREE.Mesh(geometry, material);
-      dodecahedron.position.set(
-        (Math.random() - 0.5) * 25,
-        (Math.random() - 0.5) * 25,
-        (Math.random() - 0.5) * 25
-      );
-      
-      scene.add(dodecahedron);
-      shapes.push(dodecahedron);
-    }
-
-    // Create torus shapes (donut-like)
-    for (let i = 0; i < Math.floor(shapeCount * 0.5); i++) {
-      const geometry = new THREE.TorusGeometry(1, 0.3, 16, 100);
-      const material = new THREE.MeshPhongMaterial({
-        color: 0xffd700,
-        transparent: true,
-        opacity: 0.25
-      });
-      
-      const torus = new THREE.Mesh(geometry, material);
-      torus.position.set(
-        (Math.random() - 0.5) * 30,
-        (Math.random() - 0.5) * 30,
-        (Math.random() - 0.5) * 30
-      );
-      
-      scene.add(torus);
-      shapes.push(torus);
-    }
-
-    // Create floating particles
-    const particleGeometry = new THREE.BufferGeometry();
-    const particlePositions = new Float32Array(particleCount * 3);
+    // Create dragon body (elongated ellipsoid)
+    const dragonBodyGeometry = new THREE.CylinderGeometry(0.8, 1.2, 4, 12);
+    const dragonBodyMaterial = new THREE.MeshPhongMaterial({
+      color: 0xff8c00,
+      transparent: true,
+      opacity: 0.8,
+      shininess: 100
+    });
     
-    for (let i = 0; i < particleCount * 3; i++) {
-      particlePositions[i] = (Math.random() - 0.5) * 50;
+    const dragonBody = new THREE.Mesh(dragonBodyGeometry, dragonBodyMaterial);
+    dragonBody.position.set(0, 0, 0);
+    dragonBody.rotation.z = Math.PI / 2; // Rotate to horizontal
+
+    // Create dragon head
+    const dragonHeadGeometry = new THREE.ConeGeometry(1, 2, 8);
+    const dragonHeadMaterial = new THREE.MeshPhongMaterial({
+      color: 0xffd700,
+      transparent: true,
+      opacity: 0.8,
+      shininess: 100
+    });
+    
+    const dragonHead = new THREE.Mesh(dragonHeadGeometry, dragonHeadMaterial);
+    dragonHead.position.set(3, 0, 0);
+    dragonHead.rotation.z = -Math.PI / 2;
+
+    // Create dragon wings
+    const wingGeometry = new THREE.ConeGeometry(1.5, 3, 3);
+    const wingMaterial = new THREE.MeshPhongMaterial({
+      color: 0xff4500,
+      transparent: true,
+      opacity: 0.6,
+      side: THREE.DoubleSide
+    });
+    
+    const leftWing = new THREE.Mesh(wingGeometry, wingMaterial);
+    leftWing.position.set(-0.5, 2, 0);
+    leftWing.rotation.z = Math.PI / 4;
+    
+    const rightWing = new THREE.Mesh(wingGeometry, wingMaterial);
+    rightWing.position.set(-0.5, -2, 0);
+    rightWing.rotation.z = -Math.PI / 4;
+
+    // Create dragon tail
+    const tailGeometry = new THREE.ConeGeometry(0.3, 3, 6);
+    const tailMaterial = new THREE.MeshPhongMaterial({
+      color: 0xff8c00,
+      transparent: true,
+      opacity: 0.7
+    });
+    
+    const dragonTail = new THREE.Mesh(tailGeometry, tailMaterial);
+    dragonTail.position.set(-4, 0, 0);
+    dragonTail.rotation.z = Math.PI / 2;
+
+    // Create dragon legs
+    const legGeometry = new THREE.CylinderGeometry(0.2, 0.3, 1.5, 6);
+    const legMaterial = new THREE.MeshPhongMaterial({
+      color: 0xffd700,
+      transparent: true,
+      opacity: 0.8
+    });
+    
+    const leg1 = new THREE.Mesh(legGeometry, legMaterial);
+    leg1.position.set(1, 0, -1.5);
+    
+    const leg2 = new THREE.Mesh(legGeometry, legMaterial);
+    leg2.position.set(-1, 0, -1.5);
+
+    // Create dragon spikes along the back
+    const spikeGeometry = new THREE.ConeGeometry(0.2, 0.8, 4);
+    const spikeMaterial = new THREE.MeshPhongMaterial({
+      color: 0xff4500,
+      transparent: true,
+      opacity: 0.9
+    });
+
+    // Group all dragon parts together
+    const dragonGroup = new THREE.Group();
+    
+    // Add all dragon parts to the group
+    dragonGroup.add(dragonBody);
+    dragonGroup.add(dragonHead);
+    dragonGroup.add(leftWing);
+    dragonGroup.add(rightWing);
+    dragonGroup.add(dragonTail);
+    dragonGroup.add(leg1);
+    dragonGroup.add(leg2);
+    
+    // Add spikes to the group
+    for (let i = 0; i < 5; i++) {
+      const spike = new THREE.Mesh(spikeGeometry, spikeMaterial);
+      spike.position.set(-2 + i * 1, 0, 1.5);
+      dragonGroup.add(spike);
+    }
+    
+    // Position the entire dragon
+    dragonGroup.position.set(0, 0, 0);
+    dragonGroup.scale.set(1.5, 1.5, 1.5);
+    scene.add(dragonGroup);
+
+    // Add some floating particles around the dragon
+    const dragonParticleCount = isMobile ? 30 : 50;
+    const particleGeometry = new THREE.BufferGeometry();
+    const particlePositions = new Float32Array(dragonParticleCount * 3);
+    
+    for (let i = 0; i < dragonParticleCount * 3; i++) {
+      particlePositions[i] = (Math.random() - 0.5) * 30;
     }
     
     particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
     
     const particleMaterial = new THREE.PointsMaterial({
       color: 0xff8c00,
-      size: 0.1,
+      size: 0.08,
       transparent: true,
-      opacity: 0.6
+      opacity: 0.4
     });
     
     const particles = new THREE.Points(particleGeometry, particleMaterial);
     scene.add(particles);
-    shapes.push(particles as any);
-
-    // Create wireframe spheres
-    for (let i = 0; i < Math.floor(shapeCount * 0.4); i++) {
-      const geometry = new THREE.SphereGeometry(1.5, 16, 16);
-      const material = new THREE.MeshBasicMaterial({
-        color: 0xff4500,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.3
-      });
-      
-      const sphere = new THREE.Mesh(geometry, material);
-      sphere.position.set(
-        (Math.random() - 0.5) * 35,
-        (Math.random() - 0.5) * 35,
-        (Math.random() - 0.5) * 35
-      );
-      
-      scene.add(sphere);
-      shapes.push(sphere);
-    }
-
-    // Create helix-like structures
-    for (let i = 0; i < (isMobile ? 1 : 2); i++) {
-      const points = [];
-      for (let j = 0; j < 100; j++) {
-        const angle = (j / 100) * Math.PI * 4;
-        const radius = 2;
-        const x = radius * Math.cos(angle);
-        const y = (j / 100) * 8 - 4;
-        const z = radius * Math.sin(angle);
-        points.push(new THREE.Vector3(x, y, z));
-      }
-      
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      const material = new THREE.LineBasicMaterial({
-        color: 0xffd700,
-        transparent: true,
-        opacity: 0.4
-      });
-      
-      const helix = new THREE.Line(geometry, material);
-      helix.position.set(
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 20
-      );
-      
-      scene.add(helix);
-      shapes.push(helix as any);
-    }
 
     // Lighting
     const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
@@ -201,19 +184,28 @@ export default function ThreeBackground() {
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Rotate all shapes
-      shapes.forEach((shape, index) => {
-        shape.rotation.x += 0.001 + (index * 0.0005);
-        shape.rotation.y += 0.001 + (index * 0.0005);
-        shape.rotation.z += 0.0005 + (index * 0.0003);
-        
-        // Gentle floating motion
-        shape.position.y += Math.sin(Date.now() * 0.001 + index) * 0.001;
-      });
+      // Rotate the entire dragon
+      dragonGroup.rotation.y += 0.005;
+      dragonGroup.rotation.z += 0.002;
+      
+      // Gentle floating motion for the dragon
+      dragonGroup.position.y = Math.sin(Date.now() * 0.001) * 0.5;
+      
+      // Animate wings flapping
+      const wingFlap = Math.sin(Date.now() * 0.003) * 0.3;
+      leftWing.rotation.y = wingFlap;
+      rightWing.rotation.y = -wingFlap;
+      
+      // Animate particles floating around
+      const particlePositions = particles.geometry.attributes.position.array;
+      for (let i = 0; i < particlePositions.length; i += 3) {
+        particlePositions[i + 1] += Math.sin(Date.now() * 0.001 + i) * 0.01;
+      }
+      particles.geometry.attributes.position.needsUpdate = true;
 
       // Camera follows mouse slightly
-      camera.position.x += (mouseX * 2 - camera.position.x) * 0.02;
-      camera.position.y += (mouseY * 2 - camera.position.y) * 0.02;
+      camera.position.x += (mouseX * 3 - camera.position.x) * 0.02;
+      camera.position.y += (mouseY * 3 - camera.position.y) * 0.02;
       camera.lookAt(scene.position);
 
       renderer.render(scene, camera);
