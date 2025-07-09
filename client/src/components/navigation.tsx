@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,6 +43,11 @@ export default function Navigation() {
         >
           Process
         </button>
+        <Link href="/custom-design">
+          <button className="hover:text-orange-400 transition-colors duration-300">
+            Custom Design
+          </button>
+        </Link>
         <button 
           onClick={() => scrollToSection("contact")} 
           className="hover:text-orange-400 transition-colors duration-300"
@@ -86,6 +92,14 @@ export default function Navigation() {
             >
               Process
             </button>
+            <Link href="/custom-design">
+              <button 
+                onClick={() => setIsMenuOpen(false)}
+                className="text-left hover:text-orange-400 transition-colors duration-300"
+              >
+                Custom Design
+              </button>
+            </Link>
             <button 
               onClick={() => scrollToSection("contact")} 
               className="text-left hover:text-orange-400 transition-colors duration-300"

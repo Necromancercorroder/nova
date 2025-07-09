@@ -37,7 +37,7 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Client Structure
-- **Pages**: Home page with landing sections, 404 error page
+- **Pages**: Home page with landing sections, Custom Design upload page, 404 error page
 - **Components**: Modular sections (Hero, Services, Gallery, Process, Contact, Footer)
 - **UI Library**: Complete shadcn/ui component set with custom styling
 - **Hooks**: Custom hooks for toast notifications and mobile detection
@@ -119,5 +119,16 @@ Preferred communication style: Simple, everyday language.
 - Lazy loading and code splitting via Vite
 - Optimized bundle sizes with tree shaking
 - Efficient re-renders with React Query caching
+
+## Recent Changes
+
+### Latest Updates (July 2025)
+- **Custom Design Page**: Added dedicated custom design upload page with 3-step process
+  - Step 1: File upload for STL/OBJ files with drag-and-drop support
+  - Step 2: Material and color selection (ABS, PETG, PLA, TPU)
+  - Step 3: Scale, dimensions, rotation settings with price calculation
+  - Integrated with navigation system for seamless user experience
+  - Maintains consistent dark theme with orange/yellow gradient branding
+  - No 3D background to focus on functionality
 
 The application is currently in a foundational state with a complete UI implementation and basic backend structure. The next development phase should focus on implementing the API endpoints, integrating the database operations, and adding user authentication features.
