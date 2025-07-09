@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import dragonImage from "@assets/61e5UdtNeFL._AC_SX569_1752072053841.jpg";
+import * as THREE from "three";
 
 export default function ThreeBackground() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -7,111 +7,204 @@ export default function ThreeBackground() {
   useEffect(() => {
     if (!mountRef.current) return;
 
-    // Create multiple dragon instances for movement
-    const dragons: HTMLDivElement[] = [];
+    // Performance optimization for mobile
+    const isMobile = window.innerWidth < 768;
+    const objectCount = isMobile ? 8 : 12;
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true,
+      alpha: true
+    });
     
-    // Create 3 dragon instances
-    for (let i = 0; i < 3; i++) {
-      const dragonContainer = document.createElement('div');
-      dragonContainer.className = 'dragon-container';
-      dragonContainer.style.cssText = `
-        position: absolute;
-        width: 300px;
-        height: 200px;
-        opacity: 0.3;
-        transition: opacity 0.3s ease;
-        pointer-events: none;
-        z-index: 1;
-      `;
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
+    mountRef.current.appendChild(renderer.domElement);
+
+    // Create 3D printed objects
+    const objects: THREE.Mesh[] = [];
+    
+    // Create 3D printed gears
+    for (let i = 0; i < Math.floor(objectCount * 0.3); i++) {
+      const gearGeometry = new THREE.CylinderGeometry(0.8, 0.8, 0.2, 8);
+      const gearMaterial = new THREE.MeshPhongMaterial({
+        color: i % 2 === 0 ? 0xff8c00 : 0xffd700,
+        transparent: true,
+        opacity: 0.6,
+        shininess: 100
+      });
       
-      const dragonImg = document.createElement('img');
-      dragonImg.src = dragonImage;
-      dragonImg.style.cssText = `
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        filter: brightness(0.8) contrast(1.2);
-      `;
+      const gear = new THREE.Mesh(gearGeometry, gearMaterial);
+      gear.position.set(
+        (Math.random() - 0.5) * 25,
+        (Math.random() - 0.5) * 25,
+        (Math.random() - 0.5) * 25
+      );
       
-      dragonContainer.appendChild(dragonImg);
-      mountRef.current.appendChild(dragonContainer);
-      dragons.push(dragonContainer);
-      
-      // Set initial positions
-      dragonContainer.style.left = `${Math.random() * (window.innerWidth - 300)}px`;
-      dragonContainer.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
+      scene.add(gear);
+      objects.push(gear);
     }
+
+    // Create 3D printed miniature figures
+    for (let i = 0; i < Math.floor(objectCount * 0.3); i++) {
+      const figureGeometry = new THREE.ConeGeometry(0.5, 2, 6);
+      const figureMaterial = new THREE.MeshPhongMaterial({
+        color: 0xff4500,
+        transparent: true,
+        opacity: 0.7,
+        shininess: 80
+      });
+      
+      const figure = new THREE.Mesh(figureGeometry, figureMaterial);
+      figure.position.set(
+        (Math.random() - 0.5) * 30,
+        (Math.random() - 0.5) * 30,
+        (Math.random() - 0.5) * 30
+      );
+      
+      scene.add(figure);
+      objects.push(figure);
+    }
+
+    // Create 3D printed vases
+    for (let i = 0; i < Math.floor(objectCount * 0.25); i++) {
+      const vaseGeometry = new THREE.LatheGeometry([
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(0.5, 0.5),
+        new THREE.Vector2(0.8, 1),
+        new THREE.Vector2(0.6, 1.5),
+        new THREE.Vector2(0.4, 2)
+      ]);
+      const vaseMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffd700,
+        transparent: true,
+        opacity: 0.5,
+        shininess: 120
+      });
+      
+      const vase = new THREE.Mesh(vaseGeometry, vaseMaterial);
+      vase.position.set(
+        (Math.random() - 0.5) * 20,
+        (Math.random() - 0.5) * 20,
+        (Math.random() - 0.5) * 20
+      );
+      vase.scale.set(0.5, 0.5, 0.5);
+      
+      scene.add(vase);
+      objects.push(vase);
+    }
+
+    // Create 3D printed mechanical parts
+    for (let i = 0; i < Math.floor(objectCount * 0.15); i++) {
+      const partGeometry = new THREE.BoxGeometry(1, 0.3, 1);
+      const partMaterial = new THREE.MeshPhongMaterial({
+        color: 0xff8c00,
+        transparent: true,
+        opacity: 0.8,
+        wireframe: i % 2 === 0
+      });
+      
+      const part = new THREE.Mesh(partGeometry, partMaterial);
+      part.position.set(
+        (Math.random() - 0.5) * 35,
+        (Math.random() - 0.5) * 35,
+        (Math.random() - 0.5) * 35
+      );
+      
+      scene.add(part);
+      objects.push(part);
+    }
+
+    // Create floating particles
+    const particleCount = isMobile ? 50 : 100;
+    const particleGeometry = new THREE.BufferGeometry();
+    const particlePositions = new Float32Array(particleCount * 3);
+    
+    for (let i = 0; i < particleCount * 3; i++) {
+      particlePositions[i] = (Math.random() - 0.5) * 50;
+    }
+    
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+    
+    const particleMaterial = new THREE.PointsMaterial({
+      color: 0xff8c00,
+      size: 0.1,
+      transparent: true,
+      opacity: 0.6
+    });
+    
+    const particles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particles);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
+
+    const pointLight = new THREE.PointLight(0xff8c00, 0.5, 100);
+    pointLight.position.set(10, 10, 10);
+    scene.add(pointLight);
+
+    // Camera position
+    camera.position.z = 20;
 
     // Mouse interaction
     let mouseX = 0;
     let mouseY = 0;
     
     const handleMouseMove = (event: MouseEvent) => {
-      mouseX = event.clientX;
-      mouseY = event.clientY;
-      
-      // Increase opacity when mouse is near dragons
-      dragons.forEach(dragon => {
-        const rect = dragon.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const distance = Math.sqrt(Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2));
-        
-        if (distance < 200) {
-          dragon.style.opacity = '0.6';
-        } else {
-          dragon.style.opacity = '0.3';
-        }
-      });
+      mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
     };
 
     window.addEventListener('mousemove', handleMouseMove);
 
     // Animation loop
-    let animationId: number;
     const animate = () => {
-      animationId = requestAnimationFrame(animate);
-      
-      dragons.forEach((dragon, index) => {
-        const time = Date.now() * 0.001;
-        const speed = 0.5 + index * 0.2;
+      requestAnimationFrame(animate);
+
+      // Rotate all 3D printed objects
+      objects.forEach((object, index) => {
+        object.rotation.x += 0.001 + (index * 0.0005);
+        object.rotation.y += 0.001 + (index * 0.0005);
+        object.rotation.z += 0.0005 + (index * 0.0003);
         
-        // Circular movement with different patterns
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        const radius = 200 + index * 100;
-        
-        const x = centerX + Math.sin(time * speed) * radius - 150;
-        const y = centerY + Math.cos(time * speed * 0.8) * (radius * 0.6) - 100;
-        
-        dragon.style.left = `${x}px`;
-        dragon.style.top = `${y}px`;
-        
-        // Rotation animation
-        const rotation = time * 20 + index * 120;
-        dragon.style.transform = `rotate(${rotation}deg) scale(${0.8 + Math.sin(time * 2) * 0.2})`;
-        
-        // Floating animation
-        dragon.style.transform += ` translateY(${Math.sin(time * 3 + index) * 20}px)`;
+        // Gentle floating motion
+        object.position.y += Math.sin(Date.now() * 0.001 + index) * 0.001;
       });
+
+      // Animate particles
+      const particlePositions = particles.geometry.attributes.position.array;
+      for (let i = 0; i < particlePositions.length; i += 3) {
+        particlePositions[i + 1] += Math.sin(Date.now() * 0.001 + i) * 0.01;
+      }
+      particles.geometry.attributes.position.needsUpdate = true;
+
+      // Camera follows mouse slightly
+      camera.position.x += (mouseX * 2 - camera.position.x) * 0.02;
+      camera.position.y += (mouseY * 2 - camera.position.y) * 0.02;
+      camera.lookAt(scene.position);
+
+      renderer.render(scene, camera);
     };
 
     animate();
 
     // Handle window resize
     const handleResize = () => {
-      // Reposition dragons on resize
-      dragons.forEach(dragon => {
-        const currentLeft = parseInt(dragon.style.left);
-        const currentTop = parseInt(dragon.style.top);
-        
-        if (currentLeft > window.innerWidth - 300) {
-          dragon.style.left = `${window.innerWidth - 300}px`;
-        }
-        if (currentTop > window.innerHeight - 200) {
-          dragon.style.top = `${window.innerHeight - 200}px`;
-        }
-      });
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
     window.addEventListener('resize', handleResize);
@@ -120,14 +213,10 @@ export default function ThreeBackground() {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
-      if (animationId) {
-        cancelAnimationFrame(animationId);
+      if (mountRef.current) {
+        mountRef.current.removeChild(renderer.domElement);
       }
-      dragons.forEach(dragon => {
-        if (mountRef.current && mountRef.current.contains(dragon)) {
-          mountRef.current.removeChild(dragon);
-        }
-      });
+      renderer.dispose();
     };
   }, []);
 
