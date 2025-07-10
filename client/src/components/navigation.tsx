@@ -23,7 +23,7 @@ export default function Navigation() {
         </div>
         <span className="text-xl font-bold text-orange-400">NovaNexus 3D Prints</span>
       </div>
-      
+
       <nav className="hidden md:flex gap-6">
         <button 
           onClick={() => scrollToSection("services")} 
